@@ -11,21 +11,46 @@ module Simpler
       @response = Rack::Response.new
     end
 
-    def make_response(action)
+    def make_response(action, env)
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
+      @request.params[:id] = set_parameters
 
-      set_default_headers
       send(action)
+      check_header
       write_response
+
+      env["simpler.params"] = params.to_s
 
       @response.finish
     end
 
     private
 
+    def status(code)
+      @response.status = code
+    end
+
+    def set_parameters
+      @request.path.split("/").last.to_i
+    end
+
+    def check_header
+      check = @request.env['simpler.template']
+
+      if check.class == Hash
+        set_plain_headers if check.key?(:plain)
+      else
+        set_default_headers
+      end
+    end
+
     def extract_name
       self.class.name.match('(?<name>.+)Controller')[:name].downcase
+    end
+
+    def set_plain_headers
+      @response['Content-Type'] = 'text/plain'
     end
 
     def set_default_headers

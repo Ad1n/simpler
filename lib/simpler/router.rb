@@ -19,7 +19,17 @@ module Simpler
       method = env['REQUEST_METHOD'].downcase.to_sym
       path = env['PATH_INFO']
 
-      @routes.find { |route| route.match?(method, path) }
+      #Regular Exp for routes with param
+      reg = %r[^\/[a-z]+\/([:id]{3}|[0-9]+)$]
+
+      @routes.find do |route|
+        if path.match?(reg) && route.path.match?(reg)
+          route
+        else
+          route.match?(method, path)
+        end
+      end
+
     end
 
     private
@@ -28,6 +38,7 @@ module Simpler
       route_point = route_point.split('#')
       controller = controller_from_string(route_point[0])
       action = route_point[1]
+
       route = Route.new(method, path, controller, action)
 
       @routes.push(route)

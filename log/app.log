@@ -1,0 +1,21 @@
+I, [2018-10-19T12:20:03.136075 #21062]  INFO -- : 
+
+Request: GET /tests/101
+Handler: TestsController#show
+Parameters: {:id=>101}
+Response: 201 [text/html] tests/show.html.erb
+
+I, [2018-10-19T12:20:06.462522 #21062]  INFO -- : 
+
+Request: GET /tests
+Handler: TestsController#index
+Parameters: {:id=>0}
+Response: 200 [text/html] tests/index.html.erb
+
+I, [2018-10-19T12:20:10.534633 #21062]  INFO -- : 
+
+Request: GET /asdf
+Handler: 
+Parameters: 
+Response: 404 [text/html] 
+
