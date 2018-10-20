@@ -23,7 +23,7 @@ class TestsController < Simpler::Controller
   private
 
   def set_params
-    params[:id]
+    params[:id][0]
   end
 
 end

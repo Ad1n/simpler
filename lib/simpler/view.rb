@@ -10,10 +10,10 @@ module Simpler
     end
 
     def render(binding)
-      if template.class == Hash
-        body = template[:plain] + "\n" if template.key?(:plain)
+      body = if template.is_a?(Hash)
+        template[:plain] + "\n" if template.key?(:plain)
       else
-        body = File.read(template_path)
+        File.read(template_path)
       end
 
       ERB.new(body).result(binding)

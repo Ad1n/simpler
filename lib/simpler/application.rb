@@ -28,8 +28,10 @@ module Simpler
 
     def call(env)
       route = @router.route_for(env)
-      controller = route&.controller&.new(env)
-      action = route&.action
+      return exception_response if route.nil?
+
+      controller = route.controller.new(env)
+      action = route.action
 
       make_response(controller, action, env)
     end
@@ -51,7 +53,6 @@ module Simpler
     end
 
     def make_response(controller, action, env)
-      return exception_response if controller.nil?
       controller.make_response(action, env)
     end
 
