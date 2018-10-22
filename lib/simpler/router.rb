@@ -24,8 +24,10 @@ module Simpler
 
       @routes.find do |route|
         if path.match?(reg) && route.path.match?(reg)
+          set_route_params(env, :id)
           route
         else
+          env["simpler.route_params"] = ""
           route.match?(method, path)
         end
       end
@@ -33,6 +35,17 @@ module Simpler
     end
 
     private
+
+    def set_route_params(env, key)
+      case key
+      when :id
+        env["simpler.route_params"] = { id: env['PATH_INFO'].split('/').last }
+      when :UUID
+        #something
+      else
+        env["simpler.route_params"] = { key => env['PATH_INFO'].split('/').last }
+      end
+    end
 
     def add_route(method, path, route_point)
       route_point = route_point.split('#')

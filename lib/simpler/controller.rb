@@ -14,27 +14,20 @@ module Simpler
     def make_response(action, env)
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
-      check_controller_action(env)
-      @request.params[:id] = set_parameters
+      default_controller_action(env)
 
       send(action)
       check_header
       write_response
 
-      env["simpler.params"] = params
-      check_params(env)
-      check_template(env)
+      default_template(env)
 
       @response.finish
     end
 
     private
 
-    def check_params(env)
-      env["simpler.params"] = "" if env["simpler.params"].nil?
-    end
-
-    def check_controller_action(env)
+    def default_controller_action(env)
       if env["simpler.controller"].nil? || env["simpler.action"].nil?
         env["simpler.controller"] = ""
         env["simpler.action"] = ""
@@ -43,7 +36,7 @@ module Simpler
       end
     end
 
-    def check_template(env)
+    def default_template(env)
       if env["simpler.template"].nil?
         env["simpler.template"] = ""
       else
@@ -53,11 +46,6 @@ module Simpler
 
     def status(code)
       @response.status = code
-    end
-
-    def set_parameters
-      reg_params = %r{[0-9]+}
-      @request.path.scan(reg_params)
     end
 
     def check_header
@@ -93,7 +81,7 @@ module Simpler
     end
 
     def params
-      @request.params
+      @request.env['simpler.route_params']
     end
 
     def render(template)

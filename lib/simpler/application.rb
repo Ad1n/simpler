@@ -28,7 +28,7 @@ module Simpler
 
     def call(env)
       route = @router.route_for(env)
-      return exception_response if route.nil?
+      return not_found if route.nil?
 
       controller = route.controller.new(env)
       action = route.action
@@ -56,7 +56,7 @@ module Simpler
       controller.make_response(action, env)
     end
 
-    def exception_response
+    def not_found
       [404, {"Content-Type" => "text/html"}, ["Bad request \n"]]
     end
 

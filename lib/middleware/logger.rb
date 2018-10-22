@@ -16,13 +16,12 @@ class AppLogger
   private
 
   def generate_logger_string(env, status, headers)
-    logger_string = <<~HEREDOC
+    @logger.info <<~LOG
       Request: #{env["REQUEST_METHOD"]} #{env["REQUEST_URI"]} 
       Handler: #{env["simpler.controller"]} #{env["simpler.action"]}
-      Parameters: #{env["simpler.params"]}
+      Parameters: #{env["simpler.route_params"]}
       Response: #{status} [#{headers["Content-Type"]}] #{env["simpler.template"]}
-    HEREDOC
-    @logger.info(logger_string)
+    LOG
   end
 
 end
