@@ -14,20 +14,20 @@ module Simpler
     def make_response(action, env)
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
-      default_controller_action(env)
+      check_default_controller_action(env)
 
       send(action)
       check_header
       write_response
 
-      default_template(env)
+      check_for_default_template(env)
 
       @response.finish
     end
 
     private
 
-    def default_controller_action(env)
+    def check_default_controller_action(env)
       if env["simpler.controller"].nil? || env["simpler.action"].nil?
         env["simpler.controller"] = ""
         env["simpler.action"] = ""
@@ -36,7 +36,7 @@ module Simpler
       end
     end
 
-    def default_template(env)
+    def check_for_default_template(env)
       if env["simpler.template"].nil?
         env["simpler.template"] = ""
       else
@@ -81,7 +81,7 @@ module Simpler
     end
 
     def params
-      @request.env['simpler.route_params']
+      @request.params.merge(@request.env['simpler.route_params'])
     end
 
     def render(template)

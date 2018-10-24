@@ -20,11 +20,11 @@ module Simpler
       path = env['PATH_INFO']
 
       #Regular Exp for routes with param
-      reg = %r[^\/[a-z]+\/([:id]{3}|[0-9]+)$]
+      reg = %r[^((\/[a-z]+\/(:[a-z_]*id|[0-9]+))+)|(\/[a-z]+\/(:[a-z_]*id|[0-9]+)\/[a-z]+)$]
 
       @routes.find do |route|
         if path.match?(reg) && route.path.match?(reg)
-          set_route_params(env, :id)
+          set_route_params(route.path, path, env)
           route
         else
           env["simpler.route_params"] = ""
@@ -36,15 +36,19 @@ module Simpler
 
     private
 
-    def set_route_params(env, key)
-      case key
-      when :id
-        env["simpler.route_params"] = { id: env['PATH_INFO'].split('/').last }
-      when :UUID
-        #something
-      else
-        env["simpler.route_params"] = { key => env['PATH_INFO'].split('/').last }
+    def set_route_params(route_path, request_path, env)
+      route_path = route_path.split("/")
+      request_path = request_path.split("/")
+
+      parameters = route_path.zip(request_path)
+
+      #delete from array dupplicate values and null values
+      clear_parameters = parameters.reject do |p|
+        p[0] == p[1]
       end
+
+      #create hash with params
+      clear_parameters.each { |param| env["simpler.route_params"] = { param[0][1..-1].to_sym => param[1] } }
     end
 
     def add_route(method, path, route_point)
